@@ -6,7 +6,7 @@ on:
 
 jobs:
   import:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish')
     runs-on: ubuntu-latest
 
     steps:
