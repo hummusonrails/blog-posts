@@ -855,7 +855,7 @@ async function connectToCluster() {
   collection = bucket.defaultCollection();
 }
 
-// Directories
+// Directories in the repository
 const draftsDir = './drafts';
 const publishedDir = './published';
 
