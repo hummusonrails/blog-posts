@@ -43,6 +43,12 @@ const readMarkdownFile = async (fileName, dir) => {
   return await fs.promises.readFile(filePath, 'utf-8');
 };
 
+// Parse the frontmatter and content of a Markdown file
+const parseMarkdown = (content) => {
+  const { data, content: markdownContent } = matter(content);
+  return { ...data, content: markdownContent };
+};
+
 // Store the blog post in Couchbase
 const storeBlogPost = async (post) => {
   try {
@@ -59,13 +65,13 @@ const storeBlogPost = async (post) => {
 };
 
 // Move a file from the drafts directory to the published directory
-const moveFileToPublished = (fileName) => {
+const moveFileToPublished = async (fileName) => {
   const oldPath = path.join(draftsDir, fileName);
   const newPath = path.join(publishedDir, fileName);
 
   if (fs.existsSync(oldPath)) {
     try {
-      fs.promises.rename(oldPath, newPath);
+      await fs.promises.rename(oldPath, newPath);
       console.log(`File ${fileName} moved to published directory.`);
     } catch (error) {
       console.error(`Error moving file: ${error.message}`);
@@ -83,7 +89,7 @@ const migrateMarkdownToCouchbase = async () => {
 
   for (const file of files) {
     const content = await readMarkdownFile(file, draftsDir);
-    const parsedData = matter(content).data;  // Parse the markdown content
+    const parsedData = parseMarkdown(content);  // Parse the markdown content
     try {
       await storeBlogPost(parsedData);
     } catch (error) {
