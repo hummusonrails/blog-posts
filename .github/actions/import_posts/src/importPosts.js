@@ -1,19 +1,23 @@
-import 'dotenv/config';
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import couchbase from 'couchbase';
-import * as core from '@actions/core';
-import * as github from '@actions/github';
+require('dotenv/config');
+const fs = require('fs');
+const path = require('path');
+const matter = require('gray-matter');
+const couchbase = require('couchbase');
+const core = require('@actions/core');
+const github = require('@actions/github');
 
 // Couchbase connection setup
-const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
-  username: process.env.COUCHBASE_USERNAME,
-  password: process.env.COUCHBASE_PASSWORD,
-  configProfile: "wanDevelopment",
-});
-const bucket = cluster.bucket(process.env.COUCHBASE_BUCKET);
-const collection = bucket.defaultCollection(); 
+let collection;
+
+async function connectToCluster() {
+  const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
+    username: process.env.COUCHBASE_USERNAME,
+    password: process.env.COUCHBASE_PASSWORD,
+    configProfile: "wanDevelopment",
+  });
+  const bucket = cluster.bucket(process.env.COUCHBASE_BUCKET);
+  collection = bucket.defaultCollection();
+}
 
 // Directories
 const draftsDir = './drafts';
@@ -40,6 +44,7 @@ const readMarkdownFile = async (fileName, dir) => {
   return await fs.promises.readFile(filePath, 'utf-8');
 };
 
+// Store the blog post in Couchbase
 const storeBlogPost = async (post) => {
   try {
     const generatePostId = (post) => {
@@ -58,7 +63,7 @@ const storeBlogPost = async (post) => {
 const moveFileToPublished = (fileName) => {
   const oldPath = path.join(draftsDir, fileName);
   const newPath = path.join(publishedDir, fileName);
-  
+
   if (fs.existsSync(oldPath)) {
     try {
       fs.promises.rename(oldPath, newPath);
@@ -73,11 +78,13 @@ const moveFileToPublished = (fileName) => {
 
 // Migrate Markdown files to Couchbase and move them to the published folder
 const migrateMarkdownToCouchbase = async () => {
+  await connectToCluster();
+
   const files = getMarkdownFiles(draftsDir);
 
   for (const file of files) {
     const content = await readMarkdownFile(file, draftsDir);
-    const parsedData = parseMarkdown(content);
+    const parsedData = matter(content).data;  // Parse the markdown content
     try {
       await storeBlogPost(parsedData);
     } catch (error) {
