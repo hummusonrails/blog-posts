@@ -19,7 +19,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install gray-matter couchbase
+        run: npm install gray-matter couchbase dotenv
 
       - name: Import blog posts
         run: node .github/actions/import_posts/src/importPosts.js
