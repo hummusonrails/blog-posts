@@ -15,8 +15,18 @@ const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
 const bucket = cluster.bucket(process.env.COUCHBASE_BUCKET);
 const collection = bucket.defaultCollection(); 
 
+// Directories
+const draftsDir = './drafts';
+const publishedDir = './published';
+
+// Get all Markdown files in the drafts directory
+const getMarkdownFiles = (dir) => {
+  return fs.readdirSync(dir).filter(file => file.endsWith('.md') || file.endsWith('.mdx'));
+};
+
 // Read the content of a Markdown file
-const readMarkdownFile = (filePath) => {
+const readMarkdownFile = (fileName, dir) => {
+  const filePath = path.join(dir, fileName);
   return fs.readFileSync(filePath, 'utf-8');
 };
 
@@ -26,40 +36,31 @@ const parseMarkdown = (content) => {
   return { ...data, content: markdownContent };
 };
 
-// Insert the parsed blog post into Couchbase
+// Insert or update the parsed blog post into Couchbase
 const storeBlogPost = async (post) => {
-  const id = `blog_${new Date(post.date).getTime()}`;
+  const id = `blog_${post.title.replace(/\s+/g, '-').toLowerCase()}_${new Date(post.date).getTime()}`;
   await collection.upsert(id, { ...post, type: 'blogPost' });
-  console.log(`Inserted: ${id}`);
+  console.log(`Inserted or updated: ${id}`);
 };
 
-// Fetch changed files from GitHub PR
-const getChangedFiles = async () => {
-  const token = core.getInput('GITHUB_TOKEN');
-  const octokit = github.getOctokit(token);
-  const { context } = github;
-  const { owner, repo } = context.repo;
-  const pull_number = context.payload.pull_request.number;
-
-  const { data } = await octokit.rest.pulls.listFiles({
-    owner,
-    repo,
-    pull_number,
-  });
-
-  return data.map(file => file.filename).filter(file => file.endsWith('.md') || file.endsWith('.mdx'));
+// Move a file from the drafts directory to the published directory
+const moveFileToPublished = (fileName) => {
+  const oldPath = path.join(draftsDir, fileName);
+  const newPath = path.join(publishedDir, fileName);
+  fs.renameSync(oldPath, newPath);
 };
 
-// Migrate Markdown files to Couchbase
+// Migrate Markdown files to Couchbase and move them to the published folder
 const migrateMarkdownToCouchbase = async () => {
-  const changedFiles = await getChangedFiles();
-  
-  for (const file of changedFiles) {
-    const content = readMarkdownFile(file);
+  const files = getMarkdownFiles(draftsDir);
+
+  for (const file of files) {
+    const content = readMarkdownFile(file, draftsDir);
     const parsedData = parseMarkdown(content);
     await storeBlogPost(parsedData);
+    moveFileToPublished(file);
   }
-  
+
   console.log('Migration completed.');
 };
 
