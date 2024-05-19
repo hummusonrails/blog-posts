@@ -15,51 +15,83 @@ const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
 const bucket = cluster.bucket(process.env.COUCHBASE_BUCKET);
 const collection = bucket.defaultCollection(); 
 
-// Read the content of a Markdown file
-const readMarkdownFile = (filePath) => {
-  return fs.readFileSync(filePath, 'utf-8');
-};
+// Directories
+const draftsDir = './drafts';
+const publishedDir = './published';
 
-// Parse the frontmatter and content of a Markdown file
-const parseMarkdown = (content) => {
-  const { data, content: markdownContent } = matter(content);
-  return { ...data, content: markdownContent };
-};
-
-// Insert the parsed blog post into Couchbase
-const storeBlogPost = async (post) => {
-  const id = `blog_${new Date(post.date).getTime()}`;
-  await collection.upsert(id, { ...post, type: 'blogPost' });
-  console.log(`Inserted: ${id}`);
-};
-
-// Fetch changed files from GitHub PR
-const getChangedFiles = async () => {
-  const token = core.getInput('GITHUB_TOKEN');
-  const octokit = github.getOctokit(token);
-  const { context } = github;
-  const { owner, repo } = context.repo;
-  const pull_number = context.payload.pull_request.number;
-
-  const { data } = await octokit.rest.pulls.listFiles({
-    owner,
-    repo,
-    pull_number,
-  });
-
-  return data.map(file => file.filename).filter(file => file.endsWith('.md') || file.endsWith('.mdx'));
-};
-
-// Migrate Markdown files to Couchbase
-const migrateMarkdownToCouchbase = async () => {
-  const changedFiles = await getChangedFiles();
-  
-  for (const file of changedFiles) {
-    const content = readMarkdownFile(file);
-    const parsedData = parseMarkdown(content);
-    await storeBlogPost(parsedData);
+// Get all Markdown files in the drafts directory
+const getMarkdownFiles = (dir) => {
+  try {
+    const files = fs.readdirSync(dir).filter(file => /\.(md|mdx)$/.test(file));
+    if (files.length === 0) {
+      console.error(`No Markdown files found in directory: ${dir}`);
+      throw new Error('No Markdown files found.');
+    }
+    return files;
+  } catch (error) {
+    console.error(`Error reading directory: ${error.message}`);
+    return [];
   }
+};
+
+// Read the content of a Markdown file
+const readMarkdownFile = async (fileName, dir) => {
+  const filePath = path.join(dir, fileName);
+  return await fs.promises.readFile(filePath, 'utf-8');
+};
+
+const storeBlogPost = async (post) => {
+  try {
+    const generatePostId = (post) => {
+      return `blog_${post.title.replace(/\s+/g, '-').toLowerCase()}_${Date.parse(post.date)}`;
+    };
+
+    const id = generatePostId(post);
+    await collection.upsert(id, { ...post, type: 'blogPost' });
+    console.log(`Inserted or updated: ${id}`);
+  } catch (error) {
+    console.error(`Error storing blog post: ${error.message}`);
+  }
+};
+
+// Move a file from the drafts directory to the published directory
+const moveFileToPublished = (fileName) => {
+  const oldPath = path.join(draftsDir, fileName);
+  const newPath = path.join(publishedDir, fileName);
   
+  if (fs.existsSync(oldPath)) {
+    try {
+      fs.promises.rename(oldPath, newPath);
+      console.log(`File ${fileName} moved to published directory.`);
+    } catch (error) {
+      console.error(`Error moving file: ${error.message}`);
+    }
+  } else {
+    console.error(`File ${oldPath} does not exist.`);
+  }
+};
+
+// Migrate Markdown files to Couchbase and move them to the published folder
+const migrateMarkdownToCouchbase = async () => {
+  const files = getMarkdownFiles(draftsDir);
+
+  for (const file of files) {
+    const content = await readMarkdownFile(file, draftsDir);
+    const parsedData = parseMarkdown(content);
+    try {
+      await storeBlogPost(parsedData);
+    } catch (error) {
+      console.error(`Error storing blog post: ${error.message}`);
+      throw error;
+    }
+    try {
+      await moveFileToPublished(file);
+    } catch (error) {
+      console.error(`Error moving file: ${error.message}`);
+      throw error;
+    }
+  }
+
   console.log('Migration completed.');
 };
 

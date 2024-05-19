@@ -6,8 +6,9 @@ Welcome to the repository for my personal blog posts! This repository hosts all 
 
 The repository is organized as follows:
 
-* All markdown posts are stored in `posts/`.
-* After a new post is committed to `posts/` a GitHub action is triggered that uses the `importPosts.js` script to convert the markdown file to JSON and then sends it to the blog's Couchbase bucket.
+* All markdown draft blog posts are stored in `drafts/`.
+* After a new PR is merged with the label `publish` then a GitHub action is triggered that uses the `importPosts.js` script to convert the markdown file to JSON and then sends it to the blog's Couchbase bucket.
+* At the completion of the process, the published blog post is moved to the `published/` folder.
 
 ## License
 
