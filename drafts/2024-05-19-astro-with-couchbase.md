@@ -3,11 +3,11 @@ tags: ['tutorial']
 title: Launching Your Astro Powered Blog on a Journey to Couchbase
 date: '2024-05-19'
 summary: Learn how to transform your Astro site by integrating Couchbase for a more dynamic and high-performing blog. Discover the step-by-step process and the benefits of leveraging a NoSQL database for your content.
-image: 
+image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xaa988pg5o5idrmxiqmx.png
 authors: ['default']
 ---
 
-![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--4TX6BqOY--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yxmqutwtkobvji8wa8bd.png)
+![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xaa988pg5o5idrmxiqmx.png)
 
 In this tutorial, you will learn how I increased the flexibility and performance of my Astro-powered blog by integrating Couchbase. We will walk through the step-by-step process in transforming your Astro static blog into one that leverages a NoSQL database, like Couchbase, for content storage.
 
