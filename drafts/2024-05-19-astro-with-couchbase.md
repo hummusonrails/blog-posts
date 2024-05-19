@@ -834,13 +834,13 @@ You will notice that the workflow requires four secrets to be set in your reposi
 Now, let's create the import script that the action will use. It will be very similar to the one you created way back when you began this journey. Create a new file called `importPosts.js` in the `actions/import-posts/src` folder of your `blog-posts` repository. The primary difference is that this script will read the markdown files from the `published` folder and submit them to the Couchbase database and when finished move the migrates files to the `published/` folder. It also includes more error handling and logging to ensure that the process is smooth.
 
 ```javascript
-import 'dotenv/config';
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import couchbase from 'couchbase';
-import * as core from '@actions/core';
-import * as github from '@actions/github';
+require('dotenv/config');
+const fs = require('fs');
+const path = require('path');
+const matter = require('gray-matter');
+const couchbase = require('couchbase');
+const core = require('@actions/core');
+const github = require('@actions/github');
 
 // Couchbase connection setup
 const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
