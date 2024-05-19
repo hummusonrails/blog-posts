@@ -2,7 +2,7 @@ on:
     pull_request:
       types: [opened, reopened, ready_for_review]
     issue_comment:
-  jobs:
+jobs:
     pr_agent_job:
       if: ${{ github.event.sender.type != 'Bot' }}
       runs-on: ubuntu-latest
