@@ -11,6 +11,22 @@ authors: ['default']
 
 In this tutorial, you will learn how I increased the flexibility and performance of my Astro-powered blog by integrating Couchbase. We will walk through the step-by-step process in transforming your Astro static blog into one that leverages a NoSQL database, like Couchbase, for content storage.
 
+*tl;dr You can find the full Astro site with the revisions [on GitHub](https://github.com/hummusonrails/personal-site) if you just want to skip to the code.*
+
+## Table of Contents
+
+- [What is NoSQL and Why Use It?](#what-is-nosql-and-why-use-it)
+- [Setting up Couchbase Capella](#setting-up-couchbase-capella)
+- [Migrating Your Existing Blog Posts](#migrating-your-existing-blog-posts)
+- [Updating Your Astro Site to Fetch Data from Couchbase](#updating-your-astro-site-to-fetch-data-from-couchbase)
+  - [Step 1: Define Couchbase Database Functions](#step-1-define-couchbase-database-functions)
+  - [Step 2: Update Your Astro Site to Fetch Data from Couchbase](#step-2-update-your-astro-site-to-fetch-data-from-couchbase)
+- [Adding New Blog Posts](#adding-new-blog-posts)
+  - [Step 1: Create a New Repository for Blog Posts](#step-1-create-a-new-repository-for-blog-posts)
+  - [Step 2: Create a GitHub Actions Workflow](#step-2-create-a-github-actions-workflow)
+  - [Step 3: Create the Import Script](#step-3-create-the-import-script)
+- [Conclusion](#conclusion)
+
 First of all, let's make sure we understand the terms we will be using in this tutorial before moving forward.
 
 - **Astro**: Astro is a modern web framework designed for building fast, optimized websites with a focus on developer experience. It allows developers to use their preferred JavaScript frameworks and languages, and features a unique island architecture that only hydrates interactive components on the client-side as needed. This approach reduces JavaScript load, leading to better performance. You can discover more about Astro and how to get started using it by exploring the [official documentation](https://docs.astro.build/).
