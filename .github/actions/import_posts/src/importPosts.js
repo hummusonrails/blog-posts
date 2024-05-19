@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import couchbase from 'couchbase';
+import * as core from '@actions/core';
+import * as github from '@actions/github';
 
 // Couchbase connection setup
 const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
@@ -11,19 +13,10 @@ const cluster = await couchbase.connect(process.env.COUCHBASE_URL, {
   configProfile: "wanDevelopment",
 });
 const bucket = cluster.bucket(process.env.COUCHBASE_BUCKET);
-const collection = bucket.defaultCollection();
-
-// Provide the path to your Markdown files
-const markdownDir = './posts';
-
-// Grab all Markdown files in the directory
-const getMarkdownFiles = () => {
-  return fs.readdirSync(markdownDir).filter(file => file.endsWith('.md') || file.endsWith('.mdx'));
-};
+const collection = bucket.defaultCollection(); 
 
 // Read the content of a Markdown file
-const readMarkdownFile = (fileName) => {
-  const filePath = path.join(markdownDir, fileName);
+const readMarkdownFile = (filePath) => {
   return fs.readFileSync(filePath, 'utf-8');
 };
 
@@ -40,11 +33,28 @@ const storeBlogPost = async (post) => {
   console.log(`Inserted: ${id}`);
 };
 
+// Fetch changed files from GitHub PR
+const getChangedFiles = async () => {
+  const token = core.getInput('GITHUB_TOKEN');
+  const octokit = github.getOctokit(token);
+  const { context } = github;
+  const { owner, repo } = context.repo;
+  const pull_number = context.payload.pull_request.number;
+
+  const { data } = await octokit.rest.pulls.listFiles({
+    owner,
+    repo,
+    pull_number,
+  });
+
+  return data.map(file => file.filename).filter(file => file.endsWith('.md') || file.endsWith('.mdx'));
+};
+
 // Migrate Markdown files to Couchbase
 const migrateMarkdownToCouchbase = async () => {
-  const files = getMarkdownFiles();
+  const changedFiles = await getChangedFiles();
   
-  for (const file of files) {
+  for (const file of changedFiles) {
     const content = readMarkdownFile(file);
     const parsedData = parseMarkdown(content);
     await storeBlogPost(parsedData);
