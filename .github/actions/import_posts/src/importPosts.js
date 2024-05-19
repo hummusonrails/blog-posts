@@ -21,33 +21,54 @@ const publishedDir = './published';
 
 // Get all Markdown files in the drafts directory
 const getMarkdownFiles = (dir) => {
-  return fs.readdirSync(dir).filter(file => file.endsWith('.md') || file.endsWith('.mdx'));
+  try {
+    const files = fs.readdirSync(dir).filter(file => /\.(md|mdx)$/.test(file));
+    if (files.length === 0) {
+      console.error(`No Markdown files found in directory: ${dir}`);
+      throw new Error('No Markdown files found.');
+    }
+    return files;
+  } catch (error) {
+    console.error(`Error reading directory: ${error.message}`);
+    return [];
+  }
 };
 
 // Read the content of a Markdown file
-const readMarkdownFile = (fileName, dir) => {
+const readMarkdownFile = async (fileName, dir) => {
   const filePath = path.join(dir, fileName);
-  return fs.readFileSync(filePath, 'utf-8');
+  return await fs.promises.readFile(filePath, 'utf-8');
 };
 
-// Parse the frontmatter and content of a Markdown file
-const parseMarkdown = (content) => {
-  const { data, content: markdownContent } = matter(content);
-  return { ...data, content: markdownContent };
-};
-
-// Insert or update the parsed blog post into Couchbase
 const storeBlogPost = async (post) => {
-  const id = `blog_${post.title.replace(/\s+/g, '-').toLowerCase()}_${new Date(post.date).getTime()}`;
-  await collection.upsert(id, { ...post, type: 'blogPost' });
-  console.log(`Inserted or updated: ${id}`);
+  try {
+    const generatePostId = (post) => {
+      return `blog_${post.title.replace(/\s+/g, '-').toLowerCase()}_${Date.parse(post.date)}`;
+    };
+
+    const id = generatePostId(post);
+    await collection.upsert(id, { ...post, type: 'blogPost' });
+    console.log(`Inserted or updated: ${id}`);
+  } catch (error) {
+    console.error(`Error storing blog post: ${error.message}`);
+  }
 };
 
 // Move a file from the drafts directory to the published directory
 const moveFileToPublished = (fileName) => {
   const oldPath = path.join(draftsDir, fileName);
   const newPath = path.join(publishedDir, fileName);
-  fs.renameSync(oldPath, newPath);
+  
+  if (fs.existsSync(oldPath)) {
+    try {
+      fs.promises.rename(oldPath, newPath);
+      console.log(`File ${fileName} moved to published directory.`);
+    } catch (error) {
+      console.error(`Error moving file: ${error.message}`);
+    }
+  } else {
+    console.error(`File ${oldPath} does not exist.`);
+  }
 };
 
 // Migrate Markdown files to Couchbase and move them to the published folder
@@ -55,10 +76,20 @@ const migrateMarkdownToCouchbase = async () => {
   const files = getMarkdownFiles(draftsDir);
 
   for (const file of files) {
-    const content = readMarkdownFile(file, draftsDir);
+    const content = await readMarkdownFile(file, draftsDir);
     const parsedData = parseMarkdown(content);
-    await storeBlogPost(parsedData);
-    moveFileToPublished(file);
+    try {
+      await storeBlogPost(parsedData);
+    } catch (error) {
+      console.error(`Error storing blog post: ${error.message}`);
+      throw error;
+    }
+    try {
+      await moveFileToPublished(file);
+    } catch (error) {
+      console.error(`Error moving file: ${error.message}`);
+      throw error;
+    }
   }
 
   console.log('Migration completed.');
