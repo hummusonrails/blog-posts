@@ -840,8 +840,6 @@ const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
 const couchbase = require('couchbase');
-const core = require('@actions/core');
-const github = require('@actions/github');
 
 // Couchbase connection setup
 let collection;
