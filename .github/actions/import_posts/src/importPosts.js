@@ -77,6 +77,7 @@ const moveFileToPublished = async (fileName) => {
     } catch (error) {
       console.error(`Error moving file: ${error.message}`);
     }
+  }
 };
 
 // Print directory contents
@@ -120,6 +121,7 @@ const migrateMarkdownToCouchbase = async () => {
 
   console.log('Migration completed.');
 };
+
 
 // Execute the migration
 migrateMarkdownToCouchbase().catch(console.error);
