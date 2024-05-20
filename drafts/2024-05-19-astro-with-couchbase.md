@@ -9,7 +9,7 @@ authors: ['default']
 
 ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xaa988pg5o5idrmxiqmx.png)
 
-In this tutorial, you will learn how I increased the flexibility and performance of my Astro-powered blog by integrating Couchbase. We will walk through the step-by-step process in transforming an Astro static blog into one that leverages a NoSQL database, like Couchbase, for content storage.
+In this tutorial, you will learn how I increased the flexibility and performance of my Astro-powered blog by integrating Couchbase. We will walk through the step-by-step process in transforming an Astro static blog into one that leverages a NoSQL database, like Couchbase, for data storage.
 
 *tl;dr You can find the full Astro site with the revisions [on GitHub](https://github.com/hummusonrails/personal-site) if you just want to skip to the code.*
 
