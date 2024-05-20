@@ -39,7 +39,7 @@ jobs:
         run: |
           git add .
           git commit -m "Move published markdown files from drafts to published"
-          git push
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
