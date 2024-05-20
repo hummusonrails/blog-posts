@@ -37,7 +37,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add .
+          git add -A
+          git reset node_modules/**
           git diff --exit-code || exit 0
           git commit -m "Move published markdown files from drafts to published"
           git push origin main
