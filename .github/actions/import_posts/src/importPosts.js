@@ -71,15 +71,20 @@ const moveFileToPublished = async (fileName) => {
 
   if (fs.existsSync(oldPath)) {
     try {
+      console.log(`Moving file from ${oldPath} to ${newPath}`);
       await fs.promises.rename(oldPath, newPath);
       console.log(`File ${fileName} moved to published directory.`);
     } catch (error) {
       console.error(`Error moving file: ${error.message}`);
     }
-  } else {
-    console.error(`File ${oldPath} does not exist.`);
-  }
 };
+
+// Print directory contents
+const printDirectoryContents = (dir) => {
+  const files = fs.readdirSync(dir);
+  console.log(`Contents of ${dir}:`, files);
+};
+
 
 // Migrate Markdown files to Couchbase and move them to the published folder
 const migrateMarkdownToCouchbase = async () => {
@@ -96,12 +101,21 @@ const migrateMarkdownToCouchbase = async () => {
       console.error(`Error storing blog post: ${error.message}`);
       throw error;
     }
+
+    // Print contents before moving
+    printDirectoryContents(draftsDir);
+    printDirectoryContents(publishedDir);
+
     try {
       await moveFileToPublished(file);
     } catch (error) {
       console.error(`Error moving file: ${error.message}`);
       throw error;
     }
+
+    // Print contents after moving
+    printDirectoryContents(draftsDir);
+    printDirectoryContents(publishedDir);
   }
 
   console.log('Migration completed.');
