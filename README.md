@@ -11,7 +11,7 @@ The repository is organized as follows:
     * Convert the markdown file to JSON
     * Create an vector representation of the post using the OpenAI embeddings API
     * Send both the JSON and the vector representation to the Couchbase database
-* At the completion of the process, the published blog post is moved to the `published/` folder.
+* At the completion of the process, the published blog post is moved to the `published/` folder and the site is redeployed.
 
 ## License
 
