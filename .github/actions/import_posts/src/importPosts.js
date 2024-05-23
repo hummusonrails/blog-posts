@@ -4,6 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
 const couchbase = require('couchbase');
+const openai = require("openai");
+const encoding_for_model = require("tiktoken");
+
+const openaiClient = new openai({ apiKey: process.env.OPENAI_KEY });
 
 // Couchbase connection setup
 let collection;
@@ -21,6 +25,10 @@ async function connectToCluster() {
 // Directories
 const draftsDir = './drafts';
 const publishedDir = './published';
+
+// Embedding model
+const MODEL_IDENTIFIER = 'text-embedding-ada-002';
+
 
 // Get all Markdown files in the drafts directory
 const getMarkdownFiles = (dir) => {
@@ -49,6 +57,45 @@ const parseMarkdown = (content) => {
   return { ...data, content: markdownContent };
 };
 
+// Generate embeddings
+async function generateEmbeddings(text) {
+  if (!text) {
+    console.error('Text parameter is null or undefined. Skipping API call.');
+    return null;
+  }
+
+  try {
+    const response = await openaiClient.embeddings.create({
+      model: MODEL_IDENTIFIER,
+      input: text,
+    });
+    return response.data[0].embedding;
+  } catch (error) {
+    console.error(`Error generating embeddings: ${error.message}`);
+    return null;
+  }
+}
+
+// Store embeddings
+async function storeEmbeddings(postId, content) {
+  const MAX_TOKENS = 8192;
+  const encoding = encoding_for_model(MODEL_IDENTIFIER);
+
+  // Calculate tokens and shorten if necessary
+    const encodedLength = encoding.encode(content).length;
+    try {
+      if (encodedLength > MAX_TOKENS) {
+        content = content.slice(0, content.length - (encodedLength - MAX_TOKENS));
+      }
+    } catch (error) {
+      console.error(`Error encoding content: ${error.message}`);
+    }
+
+  const embeddings = await generateEmbeddings(content);
+  await collection.upsert(`embedding::${postId}`, { type: 'embedding', embeddings });
+  console.log(`Processed and stored embeddings for post ${postId}`);
+}
+
 // Store the blog post in Couchbase
 const storeBlogPost = async (post) => {
   try {
@@ -59,6 +106,9 @@ const storeBlogPost = async (post) => {
     const id = generatePostId(post);
     await collection.upsert(id, { ...post, type: 'blogPost' });
     console.log(`Inserted or updated: ${id}`);
+
+    // Generate and store embeddings
+    await storeEmbeddings(id, post.content);
   } catch (error) {
     console.error(`Error storing blog post: ${error.message}`);
   }
@@ -83,9 +133,8 @@ const moveFileToPublished = async (fileName) => {
 // Print directory contents
 const printDirectoryContents = (dir) => {
   const files = fs.readdirSync(dir);
-  console.log(`Contents of ${dir}:`, files);
+  console.table(files);
 };
-
 
 // Migrate Markdown files to Couchbase and move them to the published folder
 const migrateMarkdownToCouchbase = async () => {
@@ -121,7 +170,6 @@ const migrateMarkdownToCouchbase = async () => {
 
   console.log('Migration completed.');
 };
-
 
 // Execute the migration
 migrateMarkdownToCouchbase().catch(console.error);
