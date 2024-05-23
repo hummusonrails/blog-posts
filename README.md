@@ -7,7 +7,10 @@ Welcome to the repository for my personal blog posts! This repository hosts all 
 The repository is organized as follows:
 
 * All markdown draft blog posts are stored in `drafts/`.
-* After a new PR is merged with the label `publish` then a GitHub action is triggered that uses the `importPosts.js` script to convert the markdown file to JSON and then sends it to the blog's Couchbase bucket.
+* After a new PR is merged with the label `publish` then a GitHub action is triggered that uses the `importPosts.js` script to 
+    * Convert the markdown file to JSON
+    * Create an vector representation of the post using the OpenAI embeddings API
+    * Send both the JSON and the vector representation to the Couchbase database
 * At the completion of the process, the published blog post is moved to the `published/` folder.
 
 ## License
