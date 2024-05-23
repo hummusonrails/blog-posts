@@ -26,6 +26,10 @@ async function connectToCluster() {
 const draftsDir = './drafts';
 const publishedDir = './published';
 
+// Embedding model
+const MODEL_IDENTIFIER = 'text-embedding-ada-002';
+
+
 // Get all Markdown files in the drafts directory
 const getMarkdownFiles = (dir) => {
   try {
@@ -55,17 +59,27 @@ const parseMarkdown = (content) => {
 
 // Generate embeddings
 async function generateEmbeddings(text) {
-  const response = await openaiClient.embeddings.create({
-    model: 'text-embedding-ada-002',
-    input: text,
-  });
-  return response.data[0].embedding;
+  if (!text) {
+    console.error('Text parameter is null or undefined. Skipping API call.');
+    return null;
+  }
+
+  try {
+    const response = await openaiClient.embeddings.create({
+      model: MODEL_IDENTIFIER,
+      input: text,
+    });
+    return response.data[0].embedding;
+  } catch (error) {
+    console.error(`Error generating embeddings: ${error.message}`);
+    return null;
+  }
 }
 
 // Store embeddings
 async function storeEmbeddings(postId, content) {
   const MAX_TOKENS = 8192;
-  const encoding = encoding_for_model('text-embedding-ada-002');
+  const encoding = encoding_for_model(MODEL_IDENTIFIER);
 
   // Calculate tokens and shorten if necessary
     const encodedLength = encoding.encode(content).length;
@@ -119,7 +133,7 @@ const moveFileToPublished = async (fileName) => {
 // Print directory contents
 const printDirectoryContents = (dir) => {
   const files = fs.readdirSync(dir);
-  console.log(`Contents of ${dir}:`, files);
+  console.table(files);
 };
 
 // Migrate Markdown files to Couchbase and move them to the published folder
