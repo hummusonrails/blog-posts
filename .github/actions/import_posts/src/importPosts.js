@@ -68,9 +68,14 @@ async function storeEmbeddings(postId, content) {
   const encoding = encoding_for_model('text-embedding-ada-002');
 
   // Calculate tokens and shorten if necessary
-  while (encoding.encode(content).length > MAX_TOKENS) {
-    content = content.slice(0, -100);
-  }
+    const encodedLength = encoding.encode(content).length;
+    try {
+      if (encodedLength > MAX_TOKENS) {
+        content = content.slice(0, content.length - (encodedLength - MAX_TOKENS));
+      }
+    } catch (error) {
+      console.error(`Error encoding content: ${error.message}`);
+    }
 
   const embeddings = await generateEmbeddings(content);
   await collection.upsert(`embedding::${postId}`, { type: 'embedding', embeddings });
