@@ -4,6 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
 const couchbase = require('couchbase');
+const openai = require("openai");
+const encoding_for_model = require("tiktoken");
+
+const openaiClient = new openai({ apiKey: process.env.OPENAI_KEY });
 
 // Couchbase connection setup
 let collection;
@@ -49,6 +53,30 @@ const parseMarkdown = (content) => {
   return { ...data, content: markdownContent };
 };
 
+// Generate embeddings
+async function generateEmbeddings(text) {
+  const response = await openaiClient.embeddings.create({
+    model: 'text-embedding-ada-002',
+    input: text,
+  });
+  return response.data[0].embedding;
+}
+
+// Store embeddings
+async function storeEmbeddings(postId, content) {
+  const MAX_TOKENS = 8192;
+  const encoding = encoding_for_model('text-embedding-ada-002');
+
+  // Calculate tokens and shorten if necessary
+  while (encoding.encode(content).length > MAX_TOKENS) {
+    content = content.slice(0, -100);
+  }
+
+  const embeddings = await generateEmbeddings(content);
+  await collection.upsert(`embedding::${postId}`, { type: 'embedding', embeddings });
+  console.log(`Processed and stored embeddings for post ${postId}`);
+}
+
 // Store the blog post in Couchbase
 const storeBlogPost = async (post) => {
   try {
@@ -59,6 +87,9 @@ const storeBlogPost = async (post) => {
     const id = generatePostId(post);
     await collection.upsert(id, { ...post, type: 'blogPost' });
     console.log(`Inserted or updated: ${id}`);
+
+    // Generate and store embeddings
+    await storeEmbeddings(id, post.content);
   } catch (error) {
     console.error(`Error storing blog post: ${error.message}`);
   }
@@ -85,7 +116,6 @@ const printDirectoryContents = (dir) => {
   const files = fs.readdirSync(dir);
   console.log(`Contents of ${dir}:`, files);
 };
-
 
 // Migrate Markdown files to Couchbase and move them to the published folder
 const migrateMarkdownToCouchbase = async () => {
@@ -121,7 +151,6 @@ const migrateMarkdownToCouchbase = async () => {
 
   console.log('Migration completed.');
 };
-
 
 // Execute the migration
 migrateMarkdownToCouchbase().catch(console.error);
