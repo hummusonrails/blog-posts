@@ -45,3 +45,9 @@ jobs:
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+  
+      - name: Redeploy site on Vercel after import
+        run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --org-id ${{ secrets.VERCL_ORG_ID }} --project-id ${{ secrets.VERCEL_PROJECT_ID }}
