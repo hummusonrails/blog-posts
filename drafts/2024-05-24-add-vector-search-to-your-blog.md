@@ -9,7 +9,7 @@ authors: ['default']
 
 ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pm8hf3a2n2swc171v3kp.png)
 
-Users expect a lot more nowadays when they search on a website. They want to find the most relevant content quickly and easily. They want the website to understand what they were looking for, even if they do not know exactly what they want. In other words, traditional keyword search is often not enough anymore.
+Users expect a lot more nowadays when they search on any website. They want to find the most relevant content quickly and easily. They want the website to understand what they were looking for, even if they do not know exactly what they want. In other words, traditional keyword search is often not enough anymore.
 
 When we talk about different search methodologies, there are a few primary options:
 
