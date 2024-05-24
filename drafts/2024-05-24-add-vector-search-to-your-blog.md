@@ -155,7 +155,7 @@ That's it! You've successfully converted your existing blog posts into vector em
 
 ## Add Vector Search Index
 
-To search for similar embeddings in Couchbase, we need to create a search index. What is a search index? Couchbase search indexes enhance the performance of query and search operations. Each index makes a predefined subset of data available for the search. You can learn more about search indexes on the [Couchbase docs](https://docs.couchbase.com/server/current/learn/services-and-indexes/indexes/indexes.html).
+To search for similar embeddings in Couchbase, we need to create a search index. What is a search index? Couchbase search indexes enhance the performance of query and search operations. Each index makes a predefined subset of data available for the search. You can learn more about search indexes on the [Couchbase docs](https://docs.couchbase.com/cloud/search/create-search-indexes.html).
 
 Navigate in your browser to your [Couchbase Capella](https://cloud.couchbase.com/sign-in) platform and sign in. Once you have signed in, click on your database storing your blog posts. In my example, my blog posts database is called `blogPosts`. Then click on `{ } Data Tools` from the top navigation bar and then select `Search` from the second navigation bar from the top. 
 
