@@ -141,7 +141,7 @@ main().catch(console.error);
 
 In the `main` function, we are getting all the blog posts from the Couchbase bucket, iterating over each post, generating embeddings for the content, and storing the embeddings in the Couchbase bucket. 
 
-We are also calculating the number of tokens for each blog post and shortening the content if it exceeds the maximum number of tokens allowed by the OpenAI API. This is one approach to dealing with a token exceeded error that you may get for longer blog posts. Another option would be to split the content into smaller chunks and send them separately to the API, and then concatenate the embeddings at the end. Both approaches have their trade-offs, so you may need to experiment to see which one works best for your use case.
+We are also calculating the number of tokens for each blog post and shortening the content for the embedding generation if it exceeds the maximum number of tokens allowed by the OpenAI API. This is one approach to dealing with a token exceeded error that you may get for longer blog posts. Another option would be to split the content into smaller chunks and send them separately to the API, and then concatenate the embeddings at the end. Both approaches have their trade-offs, so you may need to experiment to see which one works best for your use case.
 
 When you run this script from your console with `node ./scripts/generateEmbeddings.js`, it will generate embeddings for all the blog posts in your Couchbase bucket and store them in the bucket. The output will look similar to:
 
