@@ -5,7 +5,7 @@ const path = require('path');
 const matter = require('gray-matter');
 const couchbase = require('couchbase');
 const openai = require("openai");
-const encoding_for_model = require("tiktoken");
+const tiktoken = require("tiktoken");
 
 const openaiClient = new openai({ apiKey: process.env.OPENAI_KEY });
 
@@ -79,7 +79,7 @@ async function generateEmbeddings(text) {
 // Store embeddings
 async function storeEmbeddings(postId, content) {
   const MAX_TOKENS = 8192;
-  const encoding = encoding_for_model(MODEL_IDENTIFIER);
+  const encoding = tiktoken.encoding_for_model(MODEL_IDENTIFIER);
 
   // Calculate tokens and shorten if necessary
     const encodedLength = encoding.encode(content).length;
