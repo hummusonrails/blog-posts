@@ -285,7 +285,7 @@ That's a lot, so let's break down the main parts.
 
 First, we grab the search term from the query parameter in the URL. We then fetch the search results from the server using the search term. If there is no search term, we display a message saying "No posts found." However, if there is a search term, we display the search results. All of that HTML is formatting the search results to be rendered on the page, and it is inserted into the `RootLayout` inside the `ul` element with the id `search-results`.
 
-Did you notice that the search results come from a `fetch` request: `await fetch(`${import.meta.env.SEARCH_URL}/search?q=${encodedSearchTerm}`)`? This is because we are going to create a search API in the next section to execute the search for our Astro blog.
+Did you notice that the search results come from a `fetch` request? This is because we are going to create a search API in the next section to execute the search for our Astro blog.
 
 In this tutorial, I've separated out the search API from the blog itself. This is a common pattern to separate concerns and make the codebase more maintainable. You can host the search API on a different server, and supply the URL path in your `.env` file. This way, you can easily switch between different search APIs or services without changing the code in your blog.
 
