@@ -37,7 +37,7 @@ Here is a high-level overview of the process we will follow:
 4. **Build the Search Functionality**: We will build the search functionality in our Astro blog to find similar posts based on the user query using the Couchbase Node.js SDK.
 5. **Create a Search API**: We will create an API to execute the search for our Astro blog.
 
-First, let's write the code to convert our blog posts into vectors.
+First, let's write the code to convert our blog posts into vector embeddings.
 
 ## Convert Blog Posts to Vector Embeddings
 
