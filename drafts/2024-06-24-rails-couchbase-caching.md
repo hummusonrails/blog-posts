@@ -9,7 +9,7 @@ authors: ['default']
 
 ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dsljn7699sl2xypflfmn.png)
 
-Every new Rails application when it is first deployed comes along with it several other services that are used to make it run smoothly and efficiently. As Rails developers we are all familiar with them: PostgreSQL, Redis, Sidekiq, etc. 
+Every new Rails application when it is first deployed comes along with it several other services that are used to allow it to run smoothly and efficiently. As Rails developers we are all familiar with them: PostgreSQL, Redis, Sidekiq, etc. 
 
 **What if you could begin to reduce the sprawl of services that you need to run your application?**
 
