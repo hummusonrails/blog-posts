@@ -48,7 +48,7 @@ jobs:
 
       - name: Redeploy Vercel Personal Site
         run: |
-          npm install -g vercel
+          npm install -g vercel astro
           vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
           vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
           vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
