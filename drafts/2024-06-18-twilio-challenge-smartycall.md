@@ -1,5 +1,5 @@
 ---
-tags: ['showcase', 'openai', 'twilio', 'couchbase', 'nodejs']
+tags: ['showcase', 'openai', 'twilio', 'couchbase', 'nodejs', 'expressjs']
 title: "Twilio Challenge: SmartyCall - AI Powered Competitive Trivia"
 date: '2024-06-18'
 summary: Play competitive trivia with friends using Twilio's Voice and SMS APIs, OpenAI's language model, and Couchbase for data storage.
