@@ -38,7 +38,7 @@ SmartyCall is an interactive trivia game that utilizes Twilio's Voice and SMS AP
 
 ## Demo
 
-<YouTube id="https://www.youtube.com/embed/PvueyYpYCp0" />
+<iframe width="560" height="315" src="https://www.youtube.com/embed/PvueyYpYCp0?si=E9gIU_vPkbe4CiAI&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Twilio and AI
 
@@ -46,9 +46,7 @@ In "SmartyCall," Twilio's APIs play a crucial role. The Voice API is used to del
 
 ## Source Code
 
-You can find the source code for the game on GitHub. Feel free to clone it and modify it according to whatever you would like to build!
-
-<LinkPreview id="https://github.com/hummusonrails/trivia-game" />
+You can find the source code for the game on [GitHub](https://github.com/hummusonrails/trivia-game). Feel free to clone it and modify it according to whatever you would like to build!
 
 ## Additional Prize Categories
 
