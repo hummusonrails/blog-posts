@@ -37,7 +37,8 @@ SmartyCall is an interactive trivia game that utilizes Twilio's Voice and SMS AP
 * Express.js is used for routing, managing different endpoints for SMS and voice interactions.
 
 ## Demo
- {% youtube PvueyYpYCp0 %}
+
+<YouTube id="https://www.youtube.com/embed/PvueyYpYCp0" />
 
 ## Twilio and AI
 
@@ -47,7 +48,7 @@ In "SmartyCall," Twilio's APIs play a crucial role. The Voice API is used to del
 
 You can find the source code for the game on GitHub. Feel free to clone it and modify it according to whatever you would like to build!
 
-{% github https://github.com/hummusonrails/trivia-game %}
+<LinkPreview id="https://github.com/hummusonrails/trivia-game" />
 
 ## Additional Prize Categories
 
