@@ -49,9 +49,7 @@ JavaScript remains the most popular programming language, with 41.9% of responde
 
 Rust, though not as widely used, stands out with an impressive 83% admiration score, highlighting its growing reputation for safety and performance.
 
-If you're curious to learn a bit about Rust, you can watch my talk from a little while back on the topic from Devoxx Greece.
-
-{%youtube avz_SQZMxCU %}
+If you're curious to learn a bit about Rust, you can [watch my talk](https://www.youtube.com/watch?v=avz_SQZMxCU) from a little while back on the topic from Devoxx Greece.
 
 ## Wrapping Up
 
